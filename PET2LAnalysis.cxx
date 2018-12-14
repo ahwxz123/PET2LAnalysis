@@ -9,6 +9,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TStyle.h"
+#include "TPad.h"
 #include "TStopwatch.h"
 #include "TFile.h"
 #include "TChain.h"
@@ -69,7 +70,11 @@ void ShowWrongDataType(int a_returnCode){
 void ShowHelp(int a_returnCode){
     cout<<endl;
     cout<<endl;
-    cout<<" It's a application for Minfounders in MINFOUND-PET2L data analysis. Written by Xiaozhuang Wang, Dec. 2018"<<endl;
+    cout<<"***************************************************************************************************************"<<endl;
+    cout<<" It's a application for Minfounders in MINFOUND-PET2L files analysis. "<<endl;
+    cout<<" Auther: Xiaozhuang Wang "<<endl;
+    cout<<" Email: xiaozhuang.wang@minfound.com "<<endl;
+    cout<<" Date: Dec. 10th, 2018 "<<endl; 
     cout<<endl;
     cout<<" PET2LAnalysis Usage "<<endl;
     cout<<" Options: "<<endl;
@@ -85,6 +90,7 @@ void ShowHelp(int a_returnCode){
     cout<<"         [-event  delay/prompt/both ] "<<endl;
     cout<<"         [-all    ] "<<endl;
     cout<<"         [-v      ] "<<endl;
+    cout<<"         [-h      ] "<<endl;
     cout<<endl;
     cout<<endl;
     cout<<" [Main setting]: "<<endl;
@@ -93,17 +99,20 @@ void ShowHelp(int a_returnCode){
     cout<<"         -il path_to_input_txtfile : give an input txt-like file With absolute PATH, txtfile includes PET2L data format files. "<<endl;
     cout<<"         -o  path_to_output        : give an absolute PATH for output, it must exist before analysis. "<<endl;
     cout<<"                                     option -out/-output is same as -o  "<<endl;
-    cout<<"         -raw  Option              : save raw data in rootfiles or not, Option: y/yes/Yes/YES/Y/n/no/No/NO/N. (default negetive)"<<endl;
-    cout<<"         -hist Option              : save histogram in rootfiles or not, Option: y/yes/Yes/YES/Y/n/no/No/NO/N. (default positive)"<<endl;
-    cout<<"         -pdf  Option              : save pdf file or not, Option: y/yes/Yes/YES/Y/n/no/No/NO/N. (default negetive)"<<endl;
-    cout<<"         -png  Option              : save png file or not, Option: y/yes/Yes/YES/Y/n/no/No/NO/N. (default positive)"<<endl;
-    cout<<"         -bin  Option              : save binary file or not, Option: y/yes/Yes/YES/Y/n/no/No/NO/N. (default negetive)"<<endl;
-    cout<<"         -sino  Option             : save sino file or not, Option: y/yes/Yes/YES/Y/n/no/No/NO/N. (default positive)"<<endl;
-    cout<<"         -type  Option             : data file type,Option: coin/coins/single/singles. (default coincidence data)"<<endl; 
-    cout<<"         -event Option             : event kind, delay/prompt/both. (default both) "<<endl;
-    cout<<"         -all                      : save all outputs, raw,hist,pdf,png,binary. "<<endl; 
+    cout<<"         -raw  XXX                 : save raw data in rootfiles or not. XXX: y/yes/Yes/YES/Y/n/no/No/NO/N. (default negetive)"<<endl;
+    cout<<"         -hist XXX                 : save histogram in rootfiles or not. XXX: y/yes/Yes/YES/Y/n/no/No/NO/N. (default positive)"<<endl;
+    cout<<"         -pdf  XXX                 : save pdf file or not. XXX: y/yes/Yes/YES/Y/n/no/No/NO/N. (default negetive)"<<endl;
+    cout<<"         -png  XXX                 : save png file or not. XXX: y/yes/Yes/YES/Y/n/no/No/NO/N. (default positive)"<<endl;
+    cout<<"         -bin  XXX                 : save binary file or not. XXX: y/yes/Yes/YES/Y/n/no/No/NO/N. (default negetive)"<<endl;
+    cout<<"         -sino  XXX                : save sino file or not. XXX: y/yes/Yes/YES/Y/n/no/No/NO/N. (default positive)"<<endl;
+    cout<<"         -type  YYY                : data file type. YYY: coin/coins/single/singles. (default coincidence data)"<<endl; 
+    cout<<"         -event YYY                : event kind. YYY:delay/prompt/both. (default both) "<<endl;
+    cout<<"         -all                      : save all outputs. raw,hist,pdf,png,binary. "<<endl; 
     cout<<"         -v                        : print the version of this application "<<endl; 
     cout<<"                                     option -version/--version is same as -v  "<<endl;
+    cout<<"         -h                        : print Help information "<<endl; 
+    cout<<"                                     option -help/--help is same as -h  "<<endl;
+    cout<<"***************************************************************************************************************"<<endl;
     cout<<endl;
     cout<<endl;
     exit(a_returnCode);
@@ -124,7 +133,7 @@ int main(int argc, char** argv)
     string data_type="coin";
     const string single_data_type="single";
     const string coin_data_type="coin";
-    int event_type=0;           // 0  both,  1  prompt,   2  delay;
+    int event_type=2;           // 0  delay,  1  prompt,   2  both;
 
     bool Save_Raw=false;
     bool Save_Hist=true;
@@ -385,7 +394,11 @@ int main(int argc, char** argv)
 
 
       gStyle->SetOptStat(0);
-	  TStopwatch *ts1=new TStopwatch();
+	  gStyle->SetPadLeftMargin(0.15);
+	  gStyle->SetPadRightMargin(0.15);
+	  gStyle->SetPadTopMargin(0.12);
+	  gStyle->SetPadBottomMargin(0.15);
+      TStopwatch *ts1=new TStopwatch();
 	  ts1->Start(); 
 
 	  TDatime *tdate =new TDatime();
@@ -442,7 +455,7 @@ int main(int argc, char** argv)
       TH1F *Time = hist1d("Time",Ntimebin,-Ntimebin/2,Ntimebin/2,"Energy","Entries");
       
       TH2S *EnergyvsRing = hist2dS("EnergyvsRing",NZX,0,NZX,Nbin,0,Nbin,"Axial","Energy");
-      TH2S *EnergyvsAngle = hist2dS("EnergyvsAngle",NCX,0,NCX,Nbin,0,Nbin,"Axial","Energy");
+      TH2S *EnergyvsAngle = hist2dS("EnergyvsAngle",NCX,0,NCX,Nbin,0,Nbin,"TransAxial","Energy");
 
       TH1F *EnergyModule[Nmod];
       TH1F *Timecouple[halfNmod];
@@ -561,8 +574,9 @@ int main(int argc, char** argv)
 
 
 	int size = path_to_input_files.size();
+    cout<<"----Reading inputs files :"<<endl;      
     for(int i=0;i<size;i++){
-	     cout<<path_to_input_files[i].c_str()<<endl;      
+	     cout<<"    "<<path_to_input_files[i].c_str()<<endl;      
 	}
 	  
 	ifstream fin;
@@ -739,11 +753,12 @@ int main(int argc, char** argv)
     }
     hfile->Close();
 
-    TCanvas *c1=new TCanvas("c1","c1",1200,1000);
-    TCanvas *c2=new TCanvas("c2","c2",1200,1000);
+    TCanvas *c1=new TCanvas("c1","c1",1500,1000);
+    TCanvas *c2=new TCanvas("c2","c2",1500,1000);
     MycanvasSetting(c1,0.15,0.14,0.15,0.15);
     MycanvasSetting(c2,0.15,0.14,0.15,0.15);
 
+    //TVirtualPad *tv[6], *tvp[3],*tvpad[2];
      if(data_type==coin_data_type){
          if(Save_Sino){
              c1->Clear();
@@ -966,7 +981,7 @@ int main(int argc, char** argv)
       Myhist1d->GetXaxis()->SetTitleOffset(1.1);
       Myhist1d->GetXaxis()->SetLabelSize(0.045);
       Myhist1d->GetYaxis()->SetTitleSize(0.055);
-      Myhist1d->GetYaxis()->SetTitleOffset(1.1);
+      Myhist1d->GetYaxis()->SetTitleOffset(0.9);
       Myhist1d->GetYaxis()->SetLabelSize(0.045);
       Myhist1d->GetXaxis()->SetNdivisions(510);
       Myhist1d->GetXaxis()->CenterTitle();
@@ -985,7 +1000,7 @@ int main(int argc, char** argv)
       Myhist1d->GetXaxis()->SetTitleOffset(1.1);
       Myhist1d->GetXaxis()->SetLabelSize(0.045);
       Myhist1d->GetYaxis()->SetTitleSize(0.055);
-      Myhist1d->GetYaxis()->SetTitleOffset(1.1);
+      Myhist1d->GetYaxis()->SetTitleOffset(0.95);
       Myhist1d->GetYaxis()->SetLabelSize(0.045);
       Myhist1d->GetXaxis()->SetNdivisions(510);
       Myhist1d->GetXaxis()->CenterTitle();
@@ -1004,7 +1019,7 @@ int main(int argc, char** argv)
       Myhist1d->GetXaxis()->SetTitleOffset(1.1);
       Myhist1d->GetXaxis()->SetLabelSize(0.045);
       Myhist1d->GetYaxis()->SetTitleSize(0.055);
-      Myhist1d->GetYaxis()->SetTitleOffset(1.1);
+      Myhist1d->GetYaxis()->SetTitleOffset(0.95);
       Myhist1d->GetYaxis()->SetLabelSize(0.045);
       Myhist1d->GetXaxis()->SetNdivisions(510);
       Myhist1d->GetXaxis()->CenterTitle();
@@ -1024,7 +1039,7 @@ int main(int argc, char** argv)
       Myhist2d->GetXaxis()->SetTitleOffset(1.1);
       Myhist2d->GetXaxis()->SetLabelSize(0.055);
       Myhist2d->GetYaxis()->SetTitleSize(0.055);
-      Myhist2d->GetYaxis()->SetTitleOffset(1.1);
+      Myhist2d->GetYaxis()->SetTitleOffset(0.95);
       Myhist2d->GetYaxis()->SetLabelSize(0.055);
       Myhist2d->GetXaxis()->SetNdivisions(505);
       Myhist2d->GetYaxis()->SetNdivisions(505);
@@ -1047,7 +1062,7 @@ int main(int argc, char** argv)
       Myhist2d->GetXaxis()->SetTitleOffset(1.1);
       Myhist2d->GetXaxis()->SetLabelSize(0.055);
       Myhist2d->GetYaxis()->SetTitleSize(0.055);
-      Myhist2d->GetYaxis()->SetTitleOffset(1.1);
+      Myhist2d->GetYaxis()->SetTitleOffset(0.95);
       Myhist2d->GetYaxis()->SetLabelSize(0.055);
       Myhist2d->GetXaxis()->SetNdivisions(505);
       Myhist2d->GetYaxis()->SetNdivisions(505);
@@ -1077,7 +1092,7 @@ int main(int argc, char** argv)
       hh->GetXaxis()->SetTitleOffset(1.1);
       hh->GetXaxis()->SetLabelSize(0.055);
       hh->GetYaxis()->SetTitleSize(0.055);
-      hh->GetYaxis()->SetTitleOffset(1.1);
+      hh->GetYaxis()->SetTitleOffset(0.95);
       hh->GetYaxis()->SetLabelSize(0.055);
       hh->GetXaxis()->SetNdivisions(510);
       hh->GetYaxis()->SetNdivisions(510);
